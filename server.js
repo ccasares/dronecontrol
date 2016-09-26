@@ -18,6 +18,7 @@ const DBZONEHOST = "https://oc-140-86-0-162.compute.oraclecloud.com";
 const DBZONEURI = "/apex/pdb1/anki/zone/" + DEMOZONE + "/{id}";
 const DBDOCSSETUP = "/apex/pdb1/anki/docs/setup/" + DEMOZONE;
 
+
 // Other constants
 const FINISH = "finish";
 const DRONEONGOING = "go";
