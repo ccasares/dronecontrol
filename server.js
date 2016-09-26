@@ -11,9 +11,12 @@ var express = require('express')
 ;
 
 // DBCS APEX stuff
-const DBZONEHOST = "https://oc-141-145-24-78.compute.oraclecloud.com";
-const DBZONEURI = "/apex/pdb1/anki/zone/{id}";
-const DBDOCSSETUP = "/apex/pdb1/anki/docs/setup"
+// Temporary workaround. Demo zone will be retrieved from a local config file
+const DEMOZONE = "MADRID"
+//const DBZONEHOST = "https://oc-141-145-24-78.compute.oraclecloud.com";
+const DBZONEHOST = "https://oc-140-86-0-162.compute.oraclecloud.com";
+const DBZONEURI = "/apex/pdb1/anki/zone/" + DEMOZONE + "/{id}";
+const DBDOCSSETUP = "/apex/pdb1/anki/docs/setup/" + DEMOZONE;
 
 // Other constants
 const FINISH = "finish";
