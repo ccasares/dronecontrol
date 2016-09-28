@@ -14,7 +14,8 @@ var express = require('express')
 // Temporary workaround. Demo zone will be retrieved from a local config file
 const DEMOZONE = "MADRID"
 //const DBZONEHOST = "https://oc-141-145-24-78.compute.oraclecloud.com";
-const DBZONEHOST = "https://oc-140-86-0-162.compute.oraclecloud.com";
+//const DBZONEHOST = "https://oc-140-86-0-162.compute.oraclecloud.com";
+const DBZONEHOST = "https://oc-129-152-129-94.compute.oraclecloud.com";
 const DBZONEURI = "/apex/pdb1/anki/zone/" + DEMOZONE + "/{id}";
 const DBDOCSSETUP = "/apex/pdb1/anki/docs/setup/" + DEMOZONE;
 
