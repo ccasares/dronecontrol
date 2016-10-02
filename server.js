@@ -164,25 +164,25 @@ router.post('/go/:corrid/:folder/:zone', function(req, res) {
           callback(null);
         } else  {
           response = "Requested ZONE not found in database.";
-          callback({ message: response });
+          callback(response);
         }
       });
     }
   }, function (err, results) {
     if (err) {
-      res.status(500).send({ error: err.message });
+      res.status(500).send({ message: err.message });
     } else {
       // "command" object contains all data. Send it over WS
       //console.log("%j", command);
       if ( ws) {
         ws.send(JSON.stringify(command));
         response = "Command sent successfully";
-        res.send({ result: response });
+        res.send({ message: response });
       } else {
         // WebSocket session not opened when received the command!!
         console.log("Request received but no WS session opened!");
         response = "WebSocket session not opened!";
-        res.status(500).send({ error: response });
+        res.status(500).send({ message: response });
       }
     }
   });
@@ -190,7 +190,7 @@ router.post('/go/:corrid/:folder/:zone', function(req, res) {
 
 router.get('/', function(req, res) {
   console.log("REST request");
-  res.send("Usage: POST /drone/go/:corrid/:folder/:zone");
+  res.send({ message: "Usage: POST /drone/go/:corrid/:folder/:zone" });
 });
 app.use(restURI, router);
 // REST stuff - END
