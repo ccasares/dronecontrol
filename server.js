@@ -11,13 +11,11 @@ var express = require('express')
 ;
 
 // DBCS APEX stuff
-// Temporary workaround. Demo zone will be retrieved from a local config file
-const DEMOZONE = "MADRID"
 //const DBZONEHOST = "https://oc-141-145-24-78.compute.oraclecloud.com";
 //const DBZONEHOST = "https://oc-140-86-0-162.compute.oraclecloud.com";
 const DBZONEHOST = "https://oc-129-152-129-94.compute.oraclecloud.com";
-const DBZONEURI = "/apex/pdb1/anki/zone/steps/" + DEMOZONE + "/{id}";
-const DBDOCSSETUP = "/apex/pdb1/anki/docs/setup/" + DEMOZONE;
+var   DBZONEURI = "/apex/pdb1/anki/zone/steps/{DEMOZONE}/{id}";
+var   DBDOCSSETUP = "/apex/pdb1/anki/docs/setup/{DEMOZONE}";
 const URI = '/go/:demozone/:corrid/:folder/:zone';
 
 // Other constants
@@ -122,6 +120,9 @@ wss.on('connection', function(_ws) {
 router.post(URI, function(req, res) {
   console.log("POST request");
 
+  var demozone = req.params.demozone;
+  DBZONEURI   = DBZONEURI.replace('{demozone}',demozone);
+  DBDOCSSETUP = DBDOCSSETUP.replace('{demozone}',demozone);
   var corrId = req.params.corrid;
   currentCorrId = corrId;
   var folderId = req.params.folder;
