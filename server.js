@@ -18,7 +18,7 @@ const DEMOZONE = "MADRID"
 const DBZONEHOST = "https://oc-129-152-129-94.compute.oraclecloud.com";
 const DBZONEURI = "/apex/pdb1/anki/zone/steps/" + DEMOZONE + "/{id}";
 const DBDOCSSETUP = "/apex/pdb1/anki/docs/setup/" + DEMOZONE;
-
+const URI = '/go/:demozone/:corrid/:folder/:zone';
 
 // Other constants
 const FINISH = "finish";
@@ -114,14 +114,12 @@ wss.on('connection', function(_ws) {
     } else {
       // TODO
     }
-
   });
-
 });
 // WEBSOCKET stuff - END
 
 // REST stuff - BEGIN
-router.post('/go/:corrid/:folder/:zone', function(req, res) {
+router.post(URI, function(req, res) {
   console.log("POST request");
 
   var corrId = req.params.corrid;
@@ -170,7 +168,7 @@ router.post('/go/:corrid/:folder/:zone', function(req, res) {
     }
   }, function (err, results) {
     if (err) {
-      res.status(500).send({ message: err.message });
+      res.status(500).send({ message: err });
     } else {
       // "command" object contains all data. Send it over WS
       //console.log("%j", command);
@@ -190,12 +188,12 @@ router.post('/go/:corrid/:folder/:zone', function(req, res) {
 
 router.get('/', function(req, res) {
   console.log("REST request");
-  res.send({ message: "Usage: POST /drone/go/:corrid/:folder/:zone" });
+  res.send({ message: "Usage: POST /drone" + URI });
 });
 app.use(restURI, router);
 // REST stuff - END
 
 server.listen(PORT, function() {
-  console.log("REST server running on http://localhost:" + PORT + restURI);
+  console.log("REST server running on http://localhost:" + PORT + restURI + URI);
   console.log("WS server running on http://localhost:" + PORT + wsURI);
 });
