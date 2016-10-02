@@ -135,6 +135,7 @@ router.post(URI, function(req, res) {
 
   async.series({
     docs: function(callback) {
+      console.log(DBDOCSSETUP);
       dbClient.get(DBDOCSSETUP, function(err, _req, _res, obj) {
         if (err) {
           console.log(err);
