@@ -14,8 +14,8 @@ var express = require('express')
 //const DBZONEHOST = "https://oc-141-145-24-78.compute.oraclecloud.com";
 //const DBZONEHOST = "https://oc-140-86-0-162.compute.oraclecloud.com";
 const DBZONEHOST = "https://oc-129-152-129-94.compute.oraclecloud.com";
-var   DBZONEURI = "/apex/pdb1/anki/zone/steps/{DEMOZONE}/{id}";
-var   DBDOCSSETUP = "/apex/pdb1/anki/docs/setup/{DEMOZONE}";
+var   DBZONEURI = "/apex/pdb1/anki/zone/steps/{demozone}/{id}";
+var   DBDOCSSETUP = "/apex/pdb1/anki/docs/setup/{demozone}";
 const URI = '/go/:demozone/:corrid/:folder/:zone';
 
 // Other constants
@@ -135,7 +135,6 @@ router.post(URI, function(req, res) {
 
   async.series({
     docs: function(callback) {
-      console.log(DBDOCSSETUP);
       dbClient.get(DBDOCSSETUP, function(err, _req, _res, obj) {
         if (err) {
           console.log(err);
