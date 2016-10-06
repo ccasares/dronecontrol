@@ -11,18 +11,22 @@ var express = require('express')
 ;
 
 // DBCS APEX stuff
-//const DBZONEHOST = "https://oc-141-145-24-78.compute.oraclecloud.com";
-//const DBZONEHOST = "https://oc-140-86-0-162.compute.oraclecloud.com";
 const DBZONEHOST = "https://oc-129-152-129-94.compute.oraclecloud.com";
 var   DBZONEURI = "/apex/pdb1/anki/zone/steps/{demozone}/{id}";
 var   DBDOCSSETUP = "/apex/pdb1/anki/docs/setup/{demozone}";
+// SOACS stuff
+const SOAHOST = "http://oc-129-152-131-150.compute.oraclecloud.com:8001";
+const DRONELANDURI = "/soa-infra/resources/default/DroneHelper/DispatchDroneService/drone/land";
+// Local stuff
 const URI = '/go/:demozone/:corrid/:folder/:zone';
 
 // Other constants
-const FINISH = "finish";
-const DRONEONGOING = "go";
+const DRONEONGOING       = "go";
 const DRONETAKINGPICTURE = "picture";
-const DRONERETURNING = "return";
+const DRONERETURNING     = "return";
+const DRONELANDING       = "landing";
+const DRONEDOWNLOADING   = "downloading";
+const FINISH             = "finish";
 
 // Instantiate classes & servers
 var app    = express()
@@ -30,6 +34,10 @@ var app    = express()
   , server = http.createServer(app)
   , dbClient = restify.createJsonClient({
     url: DBZONEHOST,
+    rejectUnauthorized: false
+  })
+  , soaClient = restify.createJsonClient({
+    url: SOAHOST,
     rejectUnauthorized: false
   })
 ;
@@ -54,6 +62,8 @@ process.on('SIGINT', function() {
 
 const PORT = process.env.PORT || 9999;
 const wsURI = '/ws';
+
+const currentDemozone = "";
 
 // REST engine initial setup
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -101,14 +111,30 @@ wss.on('connection', function(_ws) {
     // Up to this point, we receive a valid "finish" or "changedStatus" message that we were waiting.
     // TODO: Invoke external API to notify drone tasks are done
 
-    if ( jsonData.result.toLowerCase() === FINISH) {
-      // TODO
-    } else if ( jsonData.result.toLowerCase() === DRONEONGOING) {
+    if ( jsonData.result.toLowerCase() === DRONEONGOING) {
       // TODO
     } else if ( jsonData.result.toLowerCase() === DRONETAKINGPICTURE) {
       // TODO
     } else if ( jsonData.result.toLowerCase() === DRONERETURNING) {
       // TODO
+    } else if ( jsonData.result.toLowerCase() === DRONELANDING) {
+      // TODO
+    } else if ( jsonData.result.toLowerCase() === DRONEDOWNLOADING) {
+      // TODO
+    } else if ( jsonData.result.toLowerCase() === FINISH) {
+      var data = {
+        PROCESSID : jsonData.id,
+        DEMOZONE : currentDemozone,
+        result : "OK"
+      };
+      console.log("Callback to be invoked with: %j", data);
+      soaClient.post(DRONELANDURI, data, function(err, _req, _res, obj) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Callback invoked successfully");
+        }
+      });
     } else {
       // TODO
     }
@@ -118,11 +144,10 @@ wss.on('connection', function(_ws) {
 
 // REST stuff - BEGIN
 router.post(URI, function(req, res) {
-  console.log("POST request");
-
-  var demozone = req.params.demozone;
-  DBZONEURI   = DBZONEURI.replace('{demozone}',demozone);
-  DBDOCSSETUP = DBDOCSSETUP.replace('{demozone}',demozone);
+  console.log("POST request: %j", req.params);
+  currentDemozone = req.params.demozone;
+  DBZONEURI   = DBZONEURI.replace('{demozone}', currentDemozone);
+  DBDOCSSETUP = DBDOCSSETUP.replace('{demozone}', currentDemozone);
   var corrId = req.params.corrid;
   currentCorrId = corrId;
   var folderId = req.params.folder;
