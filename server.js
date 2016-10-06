@@ -63,7 +63,7 @@ process.on('SIGINT', function() {
 const PORT = process.env.PORT || 9999;
 const wsURI = '/ws';
 
-const currentDemozone = "";
+var currentDemozone = "";
 
 // REST engine initial setup
 app.use(bodyParser.urlencoded({ extended: true }));
