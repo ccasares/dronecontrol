@@ -247,7 +247,7 @@ router.get(pingURI, function(req, res) {
       responseObj = undefined;
       timer = undefined;
     }, timeout);
-    ws.send(JSON.stringify( [ { command: "ping" } ] ));
+    ws.send(JSON.stringify( { steps: [ { command: "ping" } ] } ));
   }
 
 });
