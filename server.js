@@ -242,14 +242,13 @@ router.get(pingURI, function(req, res) {
     responseObj = res;
     waitingPing = true;
     timer = setInterval(function(){
-      res.status(408).send({ message: "TIMEOUT"});
+      responseObj.status(408).send({ message: "TIMEOUT"});
       waitingPing = false;
       responseObj = undefined;
       timer = undefined;
     }, timeout);
     ws.send(JSON.stringify( { steps: [ { command: "ping" } ] } ));
   }
-
 });
 
 router.get('/', function(req, res) {
