@@ -19,14 +19,22 @@ const SOAHOST = "http://oc-129-152-131-150.compute.oraclecloud.com:8001";
 const DRONELANDURI = "/soa-infra/resources/default/DroneHelper/DispatchDroneService/drone/land";
 // Local stuff
 const URI = '/go/:demozone/:corrid/:folder/:zone';
+const pingURI = "/ping";
 
 // Other constants
+const PONG               = "ping";
 const DRONEONGOING       = "go";
 const DRONETAKINGPICTURE = "picture";
 const DRONERETURNING     = "return";
 const DRONELANDING       = "landing";
 const DRONEDOWNLOADING   = "downloading";
 const FINISH             = "finish";
+
+// Ping handling
+var timer = undefined;
+var responseObj = undefined;
+var waitingPing = false;
+var timeout = 5000;
 
 // Instantiate classes & servers
 var app    = express()
@@ -96,6 +104,18 @@ wss.on('connection', function(_ws) {
   _ws.on('message', function(data, flags) {
     var jsonData = JSON.parse(data);
     console.log("Incoming data received: %j", jsonData);
+
+    if ( jsonData.result.toLowerCase() === PONG) {
+      if ( !waitingPing) {
+        return;
+      }
+      waitingPing = false;
+      clearTimeout(timer);
+      timer = undefined;
+      responseObj.status(200).send({ message: "OK"});
+      return;
+    }
+
     if ( !jsonData.id) {
         console.log("Invalid message received: " + data);
         return;
@@ -210,6 +230,26 @@ router.post(URI, function(req, res) {
       }
     }
   });
+});
+
+router.get(pingURI, function(req, res) {
+  console.log("PING request received...");
+  if (!ws) {
+    console.log("NO WS session opened");
+    res.status(503).send({ message: "WS session not opened"});
+    return;
+  } else {
+    responseObj = res;
+    waitingPing = true;
+    timer = setInterval(function(){
+      res.status(408).send({ message: "TIMEOUT"});
+      waitingPing = false;
+      responseObj = undefined;
+      timer = undefined;
+    }, timeout);
+    ws.send(JSON.stringify( [ { command: "ping" } ] ));
+  }
+
 });
 
 router.get('/', function(req, res) {
