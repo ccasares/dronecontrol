@@ -241,7 +241,7 @@ router.get(pingURI, function(req, res) {
   } else {
     responseObj = res;
     waitingPing = true;
-    timer = setInterval(function(){
+    timer = setTimeout(function(){
       responseObj.status(408).send({ message: "TIMEOUT"});
       waitingPing = false;
       responseObj = undefined;
