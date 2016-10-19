@@ -98,7 +98,7 @@ wss.on('connection', function(_ws) {
   _ws.on('close', function() {
     console.log("WS session disconnected");
     ws = undefined;
-    currentCorrId = undefined;
+//    currentCorrId = undefined;
   });
 
   _ws.on('message', function(data, flags) {
