@@ -17,6 +17,7 @@ var   DBDOCSSETUP = "/apex/pdb1/anki/docs/setup/{demozone}";
 // SOACS stuff
 const SOAHOST = "http://oc-129-152-131-150.compute.oraclecloud.com:8001";
 const DRONELANDURI = "/soa-infra/resources/default/DroneHelper/DispatchDroneService/drone/land";
+var   DRONESTATUSURI = "/BAMHelper/UpdateDroneStatusService/anki/event/drone/{demozone}/{status}";
 // Local stuff
 const URI = '/go/:demozone/:corrid/:folder/:zone';
 const pingURI = "/ping";
@@ -115,9 +116,12 @@ wss.on('connection', function(_ws) {
       responseObj.status(200).send({ message: "OK"});
       return;
     }
-
     if ( !jsonData.id) {
         console.log("Invalid message received: " + data);
+        return;
+    }
+    if ( !jsonData.demozone || jsonData.demozone === "") {
+        console.log("No demozone received!!: " + data);
         return;
     }
     if ( !currentCorrId) {
@@ -131,17 +135,19 @@ wss.on('connection', function(_ws) {
     // Up to this point, we receive a valid "finish" or "changedStatus" message that we were waiting.
     // TODO: Invoke external API to notify drone tasks are done
 
+    var status = undefined;
     if ( jsonData.result.toLowerCase() === DRONEONGOING) {
-      // TODO
+      status = "GOING";
     } else if ( jsonData.result.toLowerCase() === DRONETAKINGPICTURE) {
-      // TODO
+      status = "TAKING PICTURE";
     } else if ( jsonData.result.toLowerCase() === DRONERETURNING) {
-      // TODO
+      status = "RETURNING";
     } else if ( jsonData.result.toLowerCase() === DRONELANDING) {
-      // TODO
+      status = "LANDING";
     } else if ( jsonData.result.toLowerCase() === DRONEDOWNLOADING) {
-      // TODO
+      status = "DOWNLOADING";
     } else if ( jsonData.result.toLowerCase() === FINISH) {
+      status = "LANDED";
       var data = {
         PROCESSID : jsonData.id,
         DEMOZONE : currentDemozone,
@@ -158,6 +164,15 @@ wss.on('connection', function(_ws) {
     } else {
       // TODO
     }
+    // Update drone status
+    soaClient.post(DRONESTATUSURI.replace('{demozone}', jsonData.demozone).replace('{status}', status), function(err, _req, _res, obj) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Drone status updated successfully");
+      }
+    });
+
   });
 });
 // WEBSOCKET stuff - END
@@ -177,6 +192,7 @@ router.post(URI, function(req, res) {
   var command = {};
   var response = "";
   command.corrId = corrId;
+  command.demozone = currentDemozone;
 
   async.series({
     docs: function(callback) {
