@@ -165,7 +165,7 @@ wss.on('connection', function(_ws) {
       // TODO
     }
     // Update drone status
-    soaClient.post(DRONESTATUSURI.replace('{demozone}', jsonData.demozone).replace('{status}', status), function(err, _req, _res, obj) {
+    soaClient.post(DRONESTATUSURI.replace('{demozone}', jsonData.demozone).replace('{status}', encodeURI(status)), function(err, _req, _res, obj) {
       if (err) {
         console.log(err);
       } else {
