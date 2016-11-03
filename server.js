@@ -69,7 +69,7 @@ process.on('SIGINT', function() {
 });
 // Main handlers registration - END
 
-const PORT = process.env.PORT || 9999;
+const PORT = process.env.DRONEPORT || 9999;
 const wsURI = '/ws';
 
 var currentDemozone = "";
